@@ -1,0 +1,13 @@
+﻿``bayesian_pid``
+================
+
+.. automodule:: bayesian_pid
+    :members:
+
+    
+    
+    
+
+    
+    
+    
