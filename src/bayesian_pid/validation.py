@@ -131,7 +131,7 @@ def build_gp_model(train_x, train_y, dim, verbose=True):
     """
     # train_y_log = torch.log10(train_y.clamp_min(1e-8))  # add a log transfer
 
-    objective_scale = 100.0  # or 100.0 after comparison
+    objective_scale = 100.0  # or other values depending the exact range of the observation
 
     train_y_log = torch.log10(1.0 + train_y / objective_scale)
     y_std = train_y_log.std(correction=0).clamp_min(1e-8)
