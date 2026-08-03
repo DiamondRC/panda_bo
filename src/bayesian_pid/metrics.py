@@ -35,5 +35,5 @@ def following_error_rms(
     n = len(setpoints)
     i0 = int(n * window.start_frac)
     i1 = int(n * window.end_frac)
-    err = setpoints[i0:i1] - positions[i0:i1]
+    err = setpoints[i0:i1, :] - positions[i0:i1, :]
     return float(np.sqrt(np.mean(err**2)))
