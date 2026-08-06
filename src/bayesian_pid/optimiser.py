@@ -88,6 +88,8 @@ def run_one_optimization(
             train_x_phys = unnormalize(train_x, bounds_phys)
             train_y_list = []
             running_best = global_best_y
+            print(f"n_init_this:{n_init_this}")
+            print(f"running_best: {running_best}")
             for i in range(n_init_this):
                 _t0 = time.time()
                 y_i, _ = evaluate_fn(train_x_phys[i : i + 1])
@@ -510,11 +512,23 @@ def run_mc_optimisation(
                 "best_Kp": [
                     _as_pid_vector(r["best_x_phys"], dim)[0] for r in run_results
                 ],
-                "best_Ki": [
+                "best_Kv": [
                     _as_pid_vector(r["best_x_phys"], dim)[1] for r in run_results
                 ],
-                "best_Kd": [
+                "best_Ki": [
                     _as_pid_vector(r["best_x_phys"], dim)[2] for r in run_results
+                ],
+                "best_Kvff": [
+                    _as_pid_vector(r["best_x_phys"], dim)[3] for r in run_results
+                ],
+                "best_Kaff": [
+                    _as_pid_vector(r["best_x_phys"], dim)[4] for r in run_results
+                ],
+                "best_Kpff1": [
+                    _as_pid_vector(r["best_x_phys"], dim)[5] for r in run_results
+                ],
+                "best_Kpff0": [
+                    _as_pid_vector(r["best_x_phys"], dim)[6] for r in run_results
                 ],
             }
         )
@@ -541,8 +555,12 @@ def run_mc_optimisation(
                         "method": r["method"],
                         "eval": eval_idx + 1,
                         "Kp": x_phys_np[eval_idx, 0],
-                        "Ki": x_phys_np[eval_idx, 1],
-                        "Kd": x_phys_np[eval_idx, 2],
+                        "Kv": x_phys_np[eval_idx, 1],
+                        "Ki": x_phys_np[eval_idx, 2],
+                        "Kvff": x_phys_np[eval_idx, 3],
+                        "Kaff": x_phys_np[eval_idx, 4],
+                        "Kpff1": x_phys_np[eval_idx, 5],
+                        "Kpff0": x_phys_np[eval_idx, 6],
                         "obj": y_val,
                         "best_so_far": r["best_curve"][eval_idx],
                     }

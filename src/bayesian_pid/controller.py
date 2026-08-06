@@ -61,6 +61,8 @@ class PID:
     def update(self, setpoint: np.ndarray, pv: np.ndarray) -> np.ndarray:
         """Compute one control step. Both inputs are shape (n_axes,)."""
         setpoint = np.asarray(setpoint, dtype=np.float64)
+        # print(f"setpoint size: {setpoint.shape}")
+        # asdasd
         pv_scaled = np.asarray(pv, dtype=np.float64) * self.pv_scale
 
         error = setpoint - pv_scaled

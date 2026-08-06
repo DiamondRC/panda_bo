@@ -60,7 +60,10 @@ def evaluate(
             controller, trajectory, a1, a2, b, c
         )
 
-        plateau_std = following_error_rms(trajectory[:, 0], actual_pos[:, 0])
+        # plateau_std = following_error_rms(trajectory[:, 0], actual_pos[:, 0])
+
+        # revised so the folowing error is calculated in 3d space
+        plateau_std = following_error_rms(trajectory, actual_pos)
 
         values.append(plateau_std)
         details.append(
@@ -126,8 +129,13 @@ def build_gp_model(train_x, train_y, dim, verbose=True):
     - GaussianLikelihood with small noise constraint;
     - ScaleKernel(MaternKernel nu=2.5, ARD, same lengthscale constraint).
     """
-    y_std = train_y.std(correction=0).clamp_min(1e-8)
-    y = (train_y - train_y.mean()) / y_std
+    # train_y_log = torch.log10(train_y.clamp_min(1e-8))  # add a log transfer
+
+    objective_scale = 100.0  # or other values depending the exact range of the observation
+
+    train_y_log = torch.log10(1.0 + train_y / objective_scale)
+    y_std = train_y_log.std(correction=0).clamp_min(1e-8)
+    y = (train_y_log - train_y_log.mean()) / y_std
 
     likelihood = GaussianLikelihood(
         noise_constraint=Interval(
@@ -143,11 +151,19 @@ def build_gp_model(train_x, train_y, dim, verbose=True):
         )
     )
 
+    # gp = SingleTaskGP(
+    #     train_x=train_x,
+    #     train_y=y,
+    #     covar_module=covar_module,
+    #     likelihood=likelihood,
+    # ) changed as below
+
     gp = SingleTaskGP(
-        train_x=train_x,
-        train_y=y,
+        train_X=train_x,
+        train_Y=y,
         covar_module=covar_module,
         likelihood=likelihood,
+        # outcome_transform=Standardize(m=1),  # newly added
     )
 
     mll = ExactMarginalLogLikelihood(gp.likelihood, gp)

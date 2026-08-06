@@ -42,7 +42,8 @@ os.system("clear")
 # Data
 # ============================================================
 
-DATA_PATH = "/workspaces/bayesian_pid/data/"
+# DATA_PATH = "/workspaces/bayesian_pid/data"
+DATA_PATH = "/workspaces/panda_bo/data"
 
 # trajectory learned form 1v_1 data set
 # A1 = np.load(f"{DATA_PATH}/A1.npy")
@@ -98,6 +99,20 @@ TUNE_PARAMS: dict[str, tuple[float, float]] = {
     "kpff0": (0.0, 1.0),
 }
 
+# TUNE_PARAMS: dict[str, tuple[float, float]] = {
+#     # name:  (lo,   hi)
+#     # "kp": (0.0, 10.0),
+#     # "kv": (0.0, 2.0),
+#     # "ki": (0.0, 0.002),
+#     "kp": (0.0, 10.0),
+#     "kv": (0.0, 2.0),
+#     "ki": (0.0, 20.1),
+#     "kvff": (0.0, 1.0),
+#     "kaff": (0.0, 1.0),
+#     "kpff1": (0.0, 1.0),
+#     "kpff0": (0.0, 1.0),
+# }
+
 # Hold vals constant whilst others are tuned
 FIXED_PARAMS: dict[str, float] = {
     "kd": 0.0,
@@ -121,8 +136,8 @@ bounds_phys = torch.tensor(
 sim_evaluate_fn = partial(
     evaluate,
     trajectory=pos_ref,
-    A1=A1,
-    A2=A2,
+    a1=A1,  # changed use to be A1 = A1
+    a2=A2,  # changed use to be A2 = A2
     b=b,
     c=c,
     u_min=u_min,
@@ -169,9 +184,9 @@ if PANDA_HOST:
 
 method = "Turbo"  # change to "standard_bo" for ordinary BO without trust region
 run_mc = True  # False: one optimisation run; True: MC runs over different seeds
-n_mc_runs = 3  # How many MC runs
+n_mc_runs = 5  # How many MC runs
 seed0 = 1  # MC seeds will be seed0, seed0+1, ..., seed0+n_mc_runs-1
-total_budget = 200  # total number of function evaluations per simulated run
+total_budget = 100  # total number of function evaluations per simulated run
 LIVE_BUDGET = 100  # total number of function evaluations per live run
 n_init = 10  # initial Sobol points per run/restart
 save_mc_csv = True
@@ -263,7 +278,7 @@ if run_mode == "direct":
         method=method,
         seed=seed0,
         total_budget=LIVE_BUDGET,
-        n_init=1,
+        n_init=10,  # don't set to 1 unless starting from a known good point
         verbose=True,
         warm_start_x=_warm_start_x,
         progress_fn=progress_fn,
