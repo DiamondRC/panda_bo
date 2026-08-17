@@ -1,18 +1,24 @@
+# matplotlib types its Axes/Figure methods with `**kwargs: Unknown`, so every
+# call here reads as "partially unknown" under strict mode regardless of what we
+# annotate. Scoped to this module, which is nothing but plotting calls.
+# pyright: reportUnknownMemberType=false
 import os
+from typing import Any
 
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.figure import Figure
 
 from bayesian_pid.metrics import DEFAULT_WINDOW, PlateauWindow
 
 
-def _save(fig, path):
+def _save(fig: Figure, path: str) -> None:
     fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
     print(f"Saved plot: {path}")
 
 
-def plot_single_result(result, save_dir="."):
+def plot_single_result(result: dict[str, Any], save_dir: str = ".") -> None:
     """Plot the best-so-far curve for one optimisation result."""
     os.makedirs(save_dir, exist_ok=True)
     fig, ax = plt.subplots(figsize=(8, 4))
@@ -26,7 +32,11 @@ def plot_single_result(result, save_dir="."):
     _save(fig, os.path.join(save_dir, fname))
 
 
-def plot_mc_result(mc_results, uncertainty="std", save_dir="."):
+def plot_mc_result(
+    mc_results: dict[str, Any],
+    uncertainty: str = "std",
+    save_dir: str = ".",
+) -> None:
     """
     Plot the MC-averaged best-so-far curve.
 

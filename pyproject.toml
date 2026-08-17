@@ -61,6 +61,10 @@ version_file = "src/bayesian_pid/_version.py"
 [tool.pyright]
 typeCheckingMode = "strict"
 reportMissingImports = false # Ignore missing stubs in imported modules
+# gpytorch, numba, pandablocks and pandas ship no type information, so strict
+# mode cannot resolve them. Values crossing those boundaries are annotated
+# explicitly at our own function signatures instead.
+reportMissingTypeStubs = false
 
 [tool.pytest.ini_options]
 # Run pytest with all our checkers, and don't spam us with massive tracebacks on error
@@ -68,8 +72,20 @@ addopts = """
     --tb=native -vv --doctest-modules --doctest-glob="*.rst"
     """
 # https://iscinumpy.gitlab.io/post/bound-version-constraints/#watch-for-warnings
-filterwarnings = "error"
-# Doctest python code in docs, python code in src docstrings, test functions in tests
+filterwarnings = [
+    "error",
+    # gpytorch/linear_operator call torch.jit.script at import time, which torch
+    # now deprecates. Not actionable here; scoped to those modules so our own
+    # deprecations still fail the build.
+    "ignore:.*torch.jit.script.*:DeprecationWarning",
+    # botorch's acquisition optimiser warns and retries with fresh initial
+    # conditions when L-BFGS-B stalls. Benign and self-recovering; it fires
+    # readily on the tiny toy problems the optimiser tests use.
+    "ignore:Optimization failed:RuntimeWarning",
+]
+# Doctest python code in docs, python code in src docstrings, test functions in tests.
+# run.py used to need excluding here because importing it executed the whole
+# experiment; its body now lives in main(), so collection can import it safely.
 testpaths = "docs src tests"
 
 [tool.coverage.run]
