@@ -62,12 +62,13 @@ from bayesian_pid.validation import as_pid_vector, evaluate
 # Configuration — this is the only block to edit
 # ============================================================
 
-DATA_PATH = "/workspaces/bayesian_pid/data"
-# DATA_PATH = "/workspaces/panda_bo/data"
+# DATA_PATH = "/workspaces/bayesian_pid/data"
+DATA_PATH = "/workspaces/panda_bo/data"
 
 # Which identified plant model to simulate against. The trajectory must be the
 # one the model was identified from.
 PLANT_SUFFIX = "_3.5v"  # "" for the 1v_1 data set, "_3.5v" for 3.5v_1
+# PLANT_SUFFIX = "_3.5v_TLS"  # "" for the 1v_1 data set, "_3.5v" for 3.5v_1
 TRAJECTORY_FILE = "xonly_trajectory.npy"
 
 # Output and integral limits, read from the live device (BRETT_PID.MAX_OUTPUT_I
@@ -138,7 +139,7 @@ FIXED_PARAMS: dict[str, float] = {
 
 METHOD = "Turbo"  # change to "standard_bo" for ordinary BO without trust region
 RUN_MC = True  # False: one optimisation run; True: MC runs over different seeds
-N_MC_RUNS = 5  # How many MC runs
+N_MC_RUNS = 50  # How many MC runs
 SEED0 = 1  # MC seeds will be SEED0, SEED0+1, ..., SEED0+N_MC_RUNS-1
 TOTAL_BUDGET = 100  # total number of function evaluations per simulated run
 LIVE_BUDGET = 100  # total number of function evaluations per live run
