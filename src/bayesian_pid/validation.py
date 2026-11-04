@@ -13,7 +13,7 @@ from gpytorch.likelihoods import GaussianLikelihood
 from gpytorch.mlls import ExactMarginalLogLikelihood
 from gpytorch.priors.torch_priors import LogNormalPrior
 
-from bayesian_pid.metrics import following_error_score
+from bayesian_pid.metrics import following_error_score  # following_error_rms
 from bayesian_pid.sim import Array, simulate_pid_fast
 
 # Order simulate_pid_fast expects its gain vector in.
@@ -106,6 +106,7 @@ def evaluate(
         )
 
         plateau_std = following_error_score(trajectory, actual_pos, axes=axes)
+        # plateau_std = following_error_rms(trajectory, actual_pos, axes=axes)
 
         values.append(plateau_std)
         details.append(
@@ -191,22 +192,23 @@ def build_gp_model(
     # of the transform, not physics. log10 gives the same region 12.5% of the
     # range and 0.42 sd, ~290x more resolution where it matters.
 
-    train_y_log = torch.log10(train_y.clamp_min(objective_floor))
-    y_std = train_y_log.std(correction=0).clamp_min(1e-8)
-    y = (train_y_log - train_y_log.mean()) / y_std
+    # has log transfer
+    # train_y_log = torch.log10(train_y.clamp_min(objective_floor))
+    # y_std = train_y_log.std(correction=0).clamp_min(1e-8)
+    # y = (train_y_log - train_y_log.mean()) / y_std
 
     # no log transfer
-    # train_y = train_y.clamp_min(objective_floor)
-    # y_std = train_y.std(correction=0).clamp_min(1e-8)
-    # y = (train_y - train_y.mean()) / y_std
+    train_y = train_y.clamp_min(objective_floor)
+    y_std = train_y.std(correction=0).clamp_min(1e-8)
+    y = (train_y - train_y.mean()) / y_std
 
     # The simulator is deterministic, so observation noise exists only for
     # numerical conditioning. The upper bound is kept well below the
     # good-region signal (0.42 sd after the log10 transform) so the GP cannot
     # explain real structure away as noise; raise it if fits stop converging.
     # likelihood = GaussianLikelihood(noise_constraint=Interval(1e-8, 1e-4))
-    # likelihood = GaussianLikelihood(noise_constraint=Interval(1e-8, 1e-2))
-    likelihood = GaussianLikelihood()
+    likelihood = GaussianLikelihood(noise_constraint=Interval(1e-8, 1e-2))
+    # likelihood = GaussianLikelihood()
 
     covar_module = ScaleKernel(
         MaternKernel(

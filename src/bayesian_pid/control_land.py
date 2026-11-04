@@ -65,7 +65,8 @@ DATA_PATH = "/workspaces/panda_bo/data"
 
 # Which identified plant model to simulate against. The trajectory must be the
 # one the model was identified from.
-PLANT_SUFFIX = "_3.5v"  # "" for the 1v_1 data set, "_3.5v" for 3.5v_1
+# PLANT_SUFFIX = "_3.5v"  # "" for the 1v_1 data set, "_3.5v" for 3.5v_1
+PLANT_SUFFIX = "_3.5v_TLS"  # "" for the 1v_1 data set, "_3.5v" for 3.5v_1
 TRAJECTORY_FILE = "xonly_trajectory.npy"
 
 # Output and integral limits, read from the live device (BRETT_PID.MAX_OUTPUT_I

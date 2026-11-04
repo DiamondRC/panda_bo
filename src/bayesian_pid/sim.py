@@ -279,6 +279,7 @@ def simulate_pid_fast(
     prev_sum = np.zeros(n)
 
     u = np.zeros(n)
+
     # Runs to t-1 rather than t-2 so the final sample of the histories holds a
     # real control value; the plant is only stepped while there is a slot to
     # write it into. Matches simulate_pid's trailing controller call.
@@ -324,7 +325,8 @@ def simulate_pid_fast(
             prev_error[j] = error
             prev_vel_desired[j] = vel_desired
             error_hist[k, j] = error
-
+        u[1] = 0.0
+        u[2] = 0.0
         control_hist[k] = u
         prev_setpoint = setpoint.copy()
         if k < t - 1:

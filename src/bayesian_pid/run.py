@@ -67,8 +67,8 @@ DATA_PATH = "/workspaces/panda_bo/data"
 
 # Which identified plant model to simulate against. The trajectory must be the
 # one the model was identified from.
-PLANT_SUFFIX = "_3.5v"  # "" for the 1v_1 data set, "_3.5v" for 3.5v_1
-# PLANT_SUFFIX = "_3.5v_TLS"  # "" for the 1v_1 data set, "_3.5v" for 3.5v_1
+# PLANT_SUFFIX = "_3.5v"  # "" for the 1v_1 data set, "_3.5v" for 3.5v_1
+PLANT_SUFFIX = "_3.5v_TLS"  # "" for the 1v_1 data set, "_3.5v" for 3.5v_1
 TRAJECTORY_FILE = "xonly_trajectory.npy"
 
 # Output and integral limits, read from the live device (BRETT_PID.MAX_OUTPUT_I
@@ -137,7 +137,7 @@ FIXED_PARAMS: dict[str, float] = {
     # "kpff0": 0.0,
 }
 
-METHOD = "Turbo"  # change to "standard_bo" for ordinary BO without trust region
+METHOD = "turbo"  # change to "standard_bo" for ordinary BO without trust region
 RUN_MC = True  # False: one optimisation run; True: MC runs over different seeds
 N_MC_RUNS = 50  # How many MC runs
 SEED0 = 1  # MC seeds will be SEED0, SEED0+1, ..., SEED0+N_MC_RUNS-1
